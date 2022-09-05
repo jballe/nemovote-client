@@ -1,13 +1,14 @@
 param(
-    $Username,
-    [SecureString]$Password
+    $NemoVoteUrl = (get-content (Join-Path $PSSCriptRoot "../data.json" -Resolve) | convertFrom-json | Select-Object -ExpandProperty NemoVoteUrl),
+    $NemoVoteUsername = (get-content (Join-Path $PSSCriptRoot "../data.json" -Resolve) | convertFrom-json | Select-Object -ExpandProperty NemoVoteUsername),
+    [SecureString]$NemoVotePassword = (get-content (Join-Path $PSSCriptRoot "../data.json" -Resolve) | convertFrom-json | Select-Object -ExpandProperty NemoVotePassword | ConvertTo-SecureString -AsPlainText)
 )
 
 $ErrorActionPreference = "STOP"
 
 Import-Module (Join-Path $PSScriptRoot "../src/NemoVoteClient" -Resolve) -RequiredVersion 1.0.0 -Force
 
-Open-NemoVote "https://kfumspejderne.nemovote.com" $username $Password
+Open-NemoVote $NemoVoteUrl $NemoVoteUsername $NemoVotePassword
 #Set-NemoVoteToken ("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc" | ConvertTo-SecureString -AsPlainText -Force)
 
 #Get-NemoVoteUsers | Format-Table -Property username, accessLevel, displayName, id
