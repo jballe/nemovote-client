@@ -18,5 +18,9 @@ function HandleError {
         Write-Warning "Result from $Name"
         $response | ConvertTo-Json | Write-Warning
     }
+
+    If($Response.code -eq 106) {
+        Write-Error "Error during NemoVote ${Name}"
+    }
 }
 
