@@ -21,7 +21,7 @@ steps:
 - task: DownloadSecureFile@1
   name: certificatefile
   inputs:
-    secureFile: 'landsmoede-serviceaccount.p12'
+    secureFile: 'serviceaccount.p12'
 
 - script: |
     copy $(datafile.secureFilePath) 
