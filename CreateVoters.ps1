@@ -9,6 +9,9 @@ param(
 
 $ErrorActionPreference = "STOP"
 
+Write-Host "Powershell version:" -ForegroundColor Green
+(Get-Host).Version | Format-Table
+
 # Set security protocol to TLS 1.2 to avoid TLS errors
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
