@@ -10,6 +10,7 @@ param(
 $ErrorActionPreference = "STOP"
 
 Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+Register-PSRepository -Default
 Install-Module UMN-Google -Scope CurrentUser
 Import-Module UMN-Google -Scope Local
 
