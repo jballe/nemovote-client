@@ -45,7 +45,7 @@ Open-NemoVote $NemoVoteUrl $NemoVoteUsername $NemoVotePassword
 
 # Create missing users and get userId of all users
 Write-Host "Ensure users are created" -ForegroundColor Green
-$existingUsers = Get-NemoVoteUsers
+$existingUsers = Get-NemoVoteUsers | Where-Object { $_.accessLevel -eq 1 }
 $mapped = $voters | ForEach-Object {
     $email = $_.Email
     $user = $existingUsers | Where-Object { $_.email -eq $email }
@@ -62,6 +62,14 @@ $mapped = $voters | ForEach-Object {
 
     $_.UserId = $user.id
     $_
+}
+
+Write-Host "Remove existing users without a vote" -ForegroundColor Green
+$emailsToDelete = Compare-Object -ReferenceObject $voters -DifferenceObject $existingUsers -Property email `
+                | Where-Object { $_.SideIndicator -eq "=>" } `
+                | Select-Object -ExpandProperty email
+$existingUsers | Where-Object { $emailsToDelete -contains $_.email } | ForEach-Object {
+    Remove-NemoVoteUser $_.id
 }
 
 Write-Host "Add users to voting lists" -ForegroundColor Green
