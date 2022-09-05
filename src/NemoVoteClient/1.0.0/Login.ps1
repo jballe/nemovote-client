@@ -19,15 +19,10 @@ function Open-NemoVote {
 
     Set-NemoVoteServerUrl $ServerUrl
 
-    # Use this as the old Powershell 5 doesn't support $(ConvertFrom-SecureString $Password -AsPlainText)
-    $passwordStr = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto(    
-        [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
-    )   
-
     $payload = [PSCustomObject]@{
         lang = $Language
         username = $Username
-        password = $passwordStr
+        password = $(ConvertFrom-SecureString $Password -AsPlainText)
     }
 
     $response = Invoke-RestMethod -Uri "${ServerUrl}/api/v1/auth/login" `
