@@ -12,19 +12,16 @@ $ErrorActionPreference = "STOP"
 # Set security protocol to TLS 1.2 to avoid TLS errors
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
-# Install Module for easy read of Google Sheets
-Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
-Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-
+Write-Host "Install Powershell module" -ForegroundColor Green
 Install-Module UMN-Google -Scope CurrentUser -Force
 Import-Module UMN-Google -Scope Local -Force
 
-# Google API Authozation
+Write-Host "Google API Authentication" -ForegroundColor Green
 $scope = "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file"
 $certPswd = 'notasecret'
 $accessToken = Get-GOAuthTokenService -scope $scope -iss $ServicePrincipal -certPath $CertificatePath -certPswd $certPswd
 
-# Read data from Google Sheet
+Write-Host "Read data from Google sheet" -ForegroundColor Green
 $properties = Get-GSheetSpreadSheetProperties -accessToken $accessToken -spreadSheetID $FileId
 $sheetName = $properties.sheets.properties | Where-Object { $_.sheetId -eq 0 } | Select-Object -ExpandProperty title
 $data = Get-GSheetData -accessToken $accessToken -spreadSheetID $FileId -sheetName $sheetName -rangeA1 "a6:e500" -cell "range"
@@ -39,11 +36,12 @@ $voters = $data | Where-object { $_.Navn -ne "" } | Group-Object -Property Email
 } }
 Write-Host ("Have read {0} voters" -f $voters.Count)
 
-# Login to NemoVote
+Write-Host "Login to NemoVote" -ForegroundColor Green
 Import-Module (Join-Path $PSScriptRoot "./src/NemoVoteClient" -Resolve) -RequiredVersion 1.0.0 -Force
 Open-NemoVote $NemoVoteUrl $NemoVoteUsername $NemoVotePassword
 
 # Create missing users and get userId of all users
+Write-Host "Ensure users are created" -ForegroundColor Green
 $existingUsers = Get-NemoVoteUsers
 $mapped = $voters | ForEach-Object {
     $email = $_.Email
@@ -63,6 +61,7 @@ $mapped = $voters | ForEach-Object {
     $_
 }
 
+Write-Host "Add users to voting lists" -ForegroundColor Green
 # Figure out users who should be in additional voting lists
 $additional1Vote = @() + ($mapped | Where-Object { $_.Votes -ge 2 } | Select-Object -ExpandProperty UserId)
 $additional2Vote = @() + ($mapped | Where-Object { $_.Votes -ge 3 } | Select-Object -ExpandProperty UserId)
@@ -77,3 +76,5 @@ $additional3ListId = $lists | Where-Object { $_.name -eq "3. ekstra stemme" } | 
 Set-NemoVotingListMembers -ListId $additional1ListId -UserIds $additional1Vote
 Set-NemoVotingListMembers -ListId $additional2ListId -UserIds $additional2Vote
 Set-NemoVotingListMembers -ListId $additional3ListId -UserIds $additional3Vote
+
+Write-Host "Done!" -ForegroundColor Green

@@ -27,6 +27,11 @@ steps:
     copy $(datafile.secureFilePath) 
     copy $(certificatefile.secureFilePath) $(Build.SourcesDirectory)
   displayName: 'Move files'
+
+- pwsh: |
+    Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+    Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+  displayName: Install Powershell Gallery
   
 - task: PowerShell@2
   inputs:
