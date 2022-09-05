@@ -9,21 +9,27 @@ param(
 
 $ErrorActionPreference = "STOP"
 
-Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
-Register-PSRepository -Default
-Install-Module UMN-Google -Scope CurrentUser
-Import-Module UMN-Google -Scope Local
-
 # Set security protocol to TLS 1.2 to avoid TLS errors
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+
+# Install Module for easy read of Google Sheets
+Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+
+Install-Module UMN-Google -Scope CurrentUser -Force
+Import-Module UMN-Google -Scope Local -Force
+
 # Google API Authozation
 $scope = "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file"
 $certPswd = 'notasecret'
 $accessToken = Get-GOAuthTokenService -scope $scope -iss $ServicePrincipal -certPath $CertificatePath -certPswd $certPswd
+
+# Read data from Google Sheet
 $properties = Get-GSheetSpreadSheetProperties -accessToken $accessToken -spreadSheetID $FileId
 $sheetName = $properties.sheets.properties | Where-Object { $_.sheetId -eq 0 } | Select-Object -ExpandProperty title
 $data = Get-GSheetData -accessToken $accessToken -spreadSheetID $FileId -sheetName $sheetName -rangeA1 "a6:e500" -cell "range"
 
+# Process data
 $voters = $data | Where-object { $_.Navn -ne "" } | Group-Object -Property Email | ForEach-Object { [PSCustomObject]@{
     Name = ($_.Group | Select-Object -first 1).Navn
     Group = ($_.Group | Select-Object -first 1).Gruppenavn
@@ -33,10 +39,11 @@ $voters = $data | Where-object { $_.Navn -ne "" } | Group-Object -Property Email
 } }
 Write-Host ("Have read {0} voters" -f $voters.Count)
 
+# Login to NemoVote
 Import-Module (Join-Path $PSScriptRoot "./src/NemoVoteClient" -Resolve) -RequiredVersion 1.0.0 -Force
-
 Open-NemoVote $NemoVoteUrl $NemoVoteUsername $NemoVotePassword
 
+# Create missing users and get userId of all users
 $existingUsers = Get-NemoVoteUsers
 $mapped = $voters | ForEach-Object {
     $email = $_.Email
@@ -56,11 +63,12 @@ $mapped = $voters | ForEach-Object {
     $_
 }
 
+# Figure out users who should be in additional voting lists
 $additional1Vote = @() + ($mapped | Where-Object { $_.Votes -ge 2 } | Select-Object -ExpandProperty UserId)
 $additional2Vote = @() + ($mapped | Where-Object { $_.Votes -ge 3 } | Select-Object -ExpandProperty UserId)
 $additional3Vote = @() + ($mapped | Where-Object { $_.Votes -ge 4 } | Select-Object -ExpandProperty UserId)
 
-
+# Add users to voting lists
 $lists = Get-NemoVotingLists
 $additional1ListId = $lists | Where-Object { $_.name -eq "1. ekstra stemme" } | Select-Object -ExpandProperty id
 $additional2ListId = $lists | Where-Object { $_.name -eq "2. ekstra stemme" } | Select-Object -ExpandProperty id
