@@ -1,0 +1,34 @@
+trigger:
+- main
+
+schedules:
+  - cron: 0,15,30,45 * * * *
+    displayName: ofte
+    always: true
+    branches:
+      include:
+        - main
+
+
+pool:
+  vmImage: windows-latest
+
+steps:
+- task: DownloadSecureFile@1
+  name: datafile
+  inputs:
+    secureFile: 'data.json'
+- task: DownloadSecureFile@1
+  name: certificatefile
+  inputs:
+    secureFile: 'landsmoede-serviceaccount.p12'
+
+- script: |
+    copy $(datafile.secureFilePath) 
+    copy $(certificatefile.secureFilePath) $(Build.SourcesDirectory)
+  displayName: 'Move files'
+  
+- task: PowerShell@2
+  inputs:
+    filePath: 'CreateVoters.ps1'
+    workingDirectory: '$(Build.SourcesDirectory)'
