@@ -47,3 +47,26 @@ function Add-NemoVotingListMembers {
         weight = $list.weight
     })
 }
+
+function Set-NemoVotingListMembers {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$True)]
+        [string]$ListId,
+        [Parameter()]
+        [array]$UserIds
+    )
+
+    Write-Verbose ("For list {0} add {1} users: {2}" -f $ListId, $UserIds.Length, ($UserIds -join ","))
+
+    $lists = Get-NemoVotingLists
+    $list = $lists | Where-Object { $_.id -eq $ListId }
+    $list.users = $UserIds
+
+    Update-NemoVotingList ([PSCustomObject]@{
+        id = $list.id
+        name = $list.name
+        users = $list.users
+        weight = $list.weight
+    })
+}
