@@ -4,7 +4,7 @@ param(
     $FileId = (get-content "data.json" | convertFrom-json | Select-Object -ExpandProperty FileId),
     $NemoVoteUrl = (get-content "data.json" | convertFrom-json | Select-Object -ExpandProperty NemoVoteUrl),
     $NemoVoteUsername = (get-content "data.json" | convertFrom-json | Select-Object -ExpandProperty NemoVoteUsername),
-    [SecureString]$NemoVotePassword = (get-content "data.json" | convertFrom-json | Select-Object -ExpandProperty NemoVotePassword | ConvertTo-SecureString -AsPlainText)
+    [SecureString]$NemoVotePassword = (get-content "data.json" | convertFrom-json | Select-Object -ExpandProperty NemoVotePassword | ConvertTo-SecureString -AsPlainText -Force)
 )
 
 $ErrorActionPreference = "STOP"
