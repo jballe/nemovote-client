@@ -30,7 +30,7 @@ $sheetName = $properties.sheets.properties | Where-Object { $_.sheetId -eq 0 } |
 $data = Get-GSheetData -accessToken $accessToken -spreadSheetID $FileId -sheetName $sheetName -rangeA1 "a6:e500" -cell "range"
 
 # Process data
-$voters = $data | Where-object { $_.Navn -ne "" } | Group-Object -Property Email | ForEach-Object { [PSCustomObject]@{
+$voters = $data | Where-object { $_.Navn -ne "" -and $_.Gruppenavn -ne "" } | Group-Object -Property Email | ForEach-Object { [PSCustomObject]@{
     Name = ($_.Group | Select-Object -first 1).Navn
     Group = ($_.Group | Select-Object -first 1).Gruppenavn
     Email = ($_.Group | Select-Object -first 1).Email
@@ -62,6 +62,7 @@ $mapped = $voters | ForEach-Object {
     }
 
     $_.UserId = $user.id
+    $_.DisplayName = $user.displayName
     $_
 }
 
