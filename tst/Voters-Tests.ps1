@@ -9,7 +9,6 @@ $ErrorActionPreference = "STOP"
 Import-Module (Join-Path $PSScriptRoot "../src/NemoVoteClient" -Resolve) -RequiredVersion 1.0.0 -Force
 
 Open-NemoVote $NemoVoteUrl $NemoVoteUsername $NemoVotePassword
-#Set-NemoVoteToken ("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.etc.etc" | ConvertTo-SecureString -AsPlainText -Force)
 
 #Get-NemoVoteUsers | Format-Table -Property username, accessLevel, displayName, id
 #$users = Get-NemoVoteUsers | Where-Object { $_.username -like "user*" -or $_.username -like "voter*" }
