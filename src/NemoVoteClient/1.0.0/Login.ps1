@@ -25,10 +25,11 @@ function Open-NemoVote {
         password = $(ConvertFrom-SecureString $Password -AsPlainText)
     }
 
+    $body = [System.Text.Encoding]::UTF8.GetBytes(($payload | ConvertTo-Json))
     $response = Invoke-RestMethod -Uri "${ServerUrl}/api/v1/auth/login" `
-        -ContentType "application/json" `
+        -ContentType "application/json; charset=utf-8" `
         -Method POST `
-        -Body ($payload | ConvertTo-Json)
+        -Body $body
     
     HandleError -Response $response -Name "Login" -RequestObject $payload
     $token = $response.data.token | ConvertTo-SecureString -AsPlainText -Force

@@ -16,10 +16,14 @@ Open-NemoVote $NemoVoteUrl $NemoVoteUsername $NemoVotePassword
 
 $no = Get-Random -Minimum 2 -Maximum 100
 $date = Get-Date
-$newUser = Add-NemoVoteUser -Username "user${no}" -Displayname "User ${no} ${date}, Random gruppe" -Email "user${no}@balle-net.dk" -Pwd "123456"#(Get-RandomPassword -Length 8)
-$users = Get-NemoVoteUsers | Where-Object { $_.username -like "user*" -or $_.username -like "voter*" }
+$username = "user${no}"
+$newUser = Add-NemoVoteUser -Username $username -Displayname "User ${no} ${date}, Random gruppe, æøåÆØÅ" -Email "user${no}@balle-net.dk" -Pwd "123456"#(Get-RandomPassword -Length 8)
+Update-NemoVoteUser -User $newUser
+$users = Get-NemoVoteUsers -SearchQuery $username
+
 #$users | ForEach-Object { Remove-NemoVoteUser $_.id }
-$users | Format-Table -Property username, id
+$users | Format-Table -Property username, id, displayname
+Remove-NemoVoteUser -Id $newUser.id
 
 #$users | ForEach-Object { Remove-NemoVoteUser $_.id }
 

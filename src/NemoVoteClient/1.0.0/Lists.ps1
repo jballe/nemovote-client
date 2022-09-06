@@ -20,8 +20,10 @@ function Update-NemoVotingList {
 
     $server = Get-NemoVoteServerUrl
     $token = Get-NemoVoteToken
+    $body = [System.Text.Encoding]::UTF8.GetBytes( ($List | ConvertTo-Json) )
 
-    $response = Invoke-RestMethod "${server}/api/v1/voting-list/update" -Method PUT -Body ($List | ConvertTo-Json) -ContentType "application/json" -Authentication Bearer -Token $token
+
+    $response = Invoke-RestMethod "${server}/api/v1/voting-list/update" -Method PUT -Body $body -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
     HandleError $response -Name "Update list" -RequestObject $List
 }
 

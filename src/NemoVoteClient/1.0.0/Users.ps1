@@ -53,7 +53,9 @@ function Add-NemoVoteUser {
 
     $server = Get-NemoVoteServerUrl
     $token = Get-NemoVoteToken
-    $response = Invoke-RestMethod "${server}/api/v1/user/create" -Method POST -Body $payload -Authentication Bearer -Token $token
+
+    $body = [System.Text.Encoding]::UTF8.GetBytes( ($payload | ConvertTo-Json) )
+    $response = Invoke-RestMethod "${server}/api/v1/user/create" -Method POST -Body $body -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
     HandleError -Response $response -Name "Add-NemoVoteUser" -RequestObj $payload
     if("data" -in $response.PSObject.Properties.Name) {
         $response.data
@@ -67,11 +69,11 @@ function Update-NemoVoteUser {
         $User
     )
     
-    $body = ($User | ConvertTo-Json)
+    $body = [System.Text.Encoding]::UTF8.GetBytes( ($User | ConvertTo-Json) )
     $server = Get-NemoVoteServerUrl
     $token = Get-NemoVoteToken
 
-    $response = Invoke-RestMethod "${server}/api/v1/user/update" -Method PUT -Body $body -ContentType "application/json" -Authentication Bearer -Token $token
+    $response = Invoke-RestMethod "${server}/api/v1/user/update" -Method PUT -Body $body -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
     HandleError $response -Name "Update user" -RequestObject $User
 }
 
