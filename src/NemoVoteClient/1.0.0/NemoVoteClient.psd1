@@ -75,6 +75,7 @@
         "Get-NemoVoteUsers",
         "Add-NemoVoteUser",
         "Remove-NemoVoteUser",
+        "Send-NemoVoteUserCredentials",
 
         "Get-NemoVotingLists",
         "Update-NemoVotingList",

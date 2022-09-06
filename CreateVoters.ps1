@@ -56,6 +56,7 @@ $mapped = $voters | ForEach-Object {
 
         $user = Add-NemoVoteUser -Username $email -Email $email -DisplayName "${name}, ${grp}" -Pwd (Get-RandomPassword -Length 10)
         $existingUsers += $user
+        Send-NemoVoteUserCredentials $user.id
     } else {
         Write-Host "User ${email} is already created"
     }
