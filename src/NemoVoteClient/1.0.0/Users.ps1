@@ -17,7 +17,6 @@ function Get-NemoVoteUsers {
 
         $totalUsers = $response.data.totalLength
         $userPage = $response.data.collection
-        $userPage.GetType()
         $result += @() + $userPage
     } while($totalUsers -gt $result.Length -and $userPage.Length > 0)
 
@@ -71,5 +70,20 @@ function Remove-NemoVoteUser {
 
     Write-Verbose "Delete user ${Id}"
     $response = Invoke-RestMethod "${server}/api/v1/user/delete/${Id}" -Method DELETE -Authentication Bearer -Token $token
+    HandleError $response
+}
+
+function Send-NemoVoteUserCredentials {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true, Position=1)]
+        $Id
+    )
+
+    $server = Get-NemoVoteServerUrl
+    $token = Get-NemoVoteToken
+
+    $url = "${server}/api/v1/user/credentials/${Id}"
+    $response = Invoke-RestMethod $url -Method POST -Authentication Bearer -Token $token
     HandleError $response
 }
