@@ -58,6 +58,21 @@ function Add-NemoVoteUser {
     }
 }
 
+function Update-NemoVoteUser {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true, Position=1)]
+        $User
+    )
+    
+    $body = ($User | ConvertTo-Json)
+    $server = Get-NemoVoteServerUrl
+    $token = Get-NemoVoteToken
+
+    $response = Invoke-RestMethod "${server}/api/v1/user/update" -Method PUT -Body $body -ContentType "application/json" -Authentication Bearer -Token $token
+    HandleError $response -Name "Update user" -RequestObject $User
+}
+
 function Remove-NemoVoteUser {
     [CmdletBinding()]
     param(

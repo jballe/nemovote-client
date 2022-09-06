@@ -74,6 +74,7 @@
         "Set-NemoVoteToken",
         "Get-NemoVoteUsers",
         "Add-NemoVoteUser",
+        "Update-NemoVoteUser",
         "Remove-NemoVoteUser",
         "Send-NemoVoteUserCredentials",
 
