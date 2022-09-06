@@ -1,6 +1,7 @@
 function Get-NemoVoteUsers {
     [CmdletBinding()]
     param(
+        $SearchQuery
     )
 
     $server = Get-NemoVoteServerUrl
@@ -12,13 +13,14 @@ function Get-NemoVoteUsers {
     $totalUsers = 0
     do {
         $page++
-        $response = Invoke-RestMethod "${server}/api/v1/user/getall?page=${page}&pageSize=${pageSize}" -Authentication Bearer -Token $token
+        $url = "${server}/api/v1/user/getall?page=${page}&pageSize=${pageSize}&searchQuery=${SearchQuery}"
+        $response = Invoke-RestMethod $url -Authentication Bearer -Token $token
         HandleError $response
 
         $totalUsers = $response.data.totalLength
         $userPage = $response.data.collection
         $result += @() + $userPage
-    } while($totalUsers -gt $result.Length -and $userPage.Length > 0)
+    } while($totalUsers -gt $result.Length -and $userPage.Length -gt 0)
 
     $result
 }
