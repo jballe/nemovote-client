@@ -62,7 +62,6 @@ $mapped = $voters | ForEach-Object {
     }
 
     $_.UserId = $user.id
-    $_.DisplayName = $user.displayName
     $_
 }
 
