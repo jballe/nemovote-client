@@ -50,15 +50,16 @@ $mapped = $voters | ForEach-Object {
     $email = $_.Email
     $user = $existingUsers | Where-Object { $_.email -eq $email }
     if($user -eq $Null) {
-        Write-Host "User ${email} will be created"
         $name = $_.Name
         $grp = $_.Group
+        $displayName = "${name}, ${grp}"
+        Write-Host "User ${displayName} will be created"
 
-        $user = Add-NemoVoteUser -Username $email -Email $email -DisplayName "${name}, ${grp}" -Pwd (Get-RandomPassword -Length 10)
+        $user = Add-NemoVoteUser -Username $email -Email $email -DisplayName $displayName -Pwd (Get-RandomPassword -Length 10)
         $existingUsers += $user
         Send-NemoVoteUserCredentials $user.id
     } else {
-        Write-Host "User ${email} is already created"
+        #Write-Host "User ${email} is already created"
     }
 
     $_.UserId = $user.id
@@ -69,7 +70,9 @@ Write-Host "Remove existing users without a vote" -ForegroundColor Green
 $emailsToDelete = Compare-Object -ReferenceObject $voters -DifferenceObject $existingUsers -Property email `
                 | Where-Object { $_.SideIndicator -eq "=>" } `
                 | Select-Object -ExpandProperty email
-$existingUsers | Where-Object { $emailsToDelete -contains $_.email } | ForEach-Object {
+$usersToDelete = $existingUsers | Where-Object { $emailsToDelete -contains $_.email }
+$usersToDelete | Format-Table
+$usersToDelete | ForEach-Object {
     Remove-NemoVoteUser $_.id
 }
 
@@ -81,12 +84,15 @@ $additional3Vote = @() + ($mapped | Where-Object { $_.Votes -ge 4 } | Select-Obj
 
 # Add users to voting lists
 $lists = Get-NemoVotingLists
-$additional1ListId = $lists | Where-Object { $_.name -eq "1. ekstra stemme" } | Select-Object -ExpandProperty id
-$additional2ListId = $lists | Where-Object { $_.name -eq "2. ekstra stemme" } | Select-Object -ExpandProperty id
-$additional3ListId = $lists | Where-Object { $_.name -eq "3. ekstra stemme" } | Select-Object -ExpandProperty id
+$additional1List = $lists | Where-Object { $_.name -eq "1. ekstra stemme" }
+$additional2List = $lists | Where-Object { $_.name -eq "2. ekstra stemme" }
+$additional3List = $lists | Where-Object { $_.name -eq "3. ekstra stemme" }
 
-Set-NemoVotingListMembers -ListId $additional1ListId -UserIds $additional1Vote
-Set-NemoVotingListMembers -ListId $additional2ListId -UserIds $additional2Vote
-Set-NemoVotingListMembers -ListId $additional3ListId -UserIds $additional3Vote
+Write-Host ("Set {0} users for voting list {1}" -f $additional1Vote.Count, $additional1List.name)
+Set-NemoVotingListMembers -ListId $additional1List.id -UserIds $additional1Vote
+Write-Host ("Set {0} users for voting list {1}" -f $additional2Vote.Count, $additional2List.name)
+Set-NemoVotingListMembers -ListId $additional2List.id -UserIds $additional2Vote
+Write-Host ("Set {0} users for voting list {1}" -f $additional3Vote.Count, $additional3List.name)
+Set-NemoVotingListMembers -ListId $additional3List.id -UserIds $additional3Vote
 
 Write-Host "Done!" -ForegroundColor Green
