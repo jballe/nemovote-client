@@ -31,9 +31,9 @@ $data = Get-GSheetData -accessToken $accessToken -spreadSheetID $FileId -sheetNa
 
 # Process data
 $voters = $data | Where-object { $_.Navn -ne "" -and $_.Gruppenavn -ne "" } | Group-Object -Property Email | ForEach-Object { [PSCustomObject]@{
-    Name = ($_.Group | Select-Object -first 1).Navn
-    Group = ($_.Group | Select-Object -first 1).Gruppenavn
-    Email = ($_.Group | Select-Object -first 1).Email
+    Name = ($_.Group | Select-Object -first 1).Navn.Trim()
+    Group = ($_.Group | Select-Object -first 1).Gruppenavn.Trim()
+    Email = ($_.Group | Select-Object -first 1).Email.Trim()
     Votes = $_.Count
     UserId = $Null
 } }
@@ -48,10 +48,10 @@ Write-Host "Ensure users are created" -ForegroundColor Green
 $existingUsers = Get-NemoVoteUsers | Where-Object { $_.accessLevel -eq 1 }
 $mapped = $voters | ForEach-Object {
     $email = $_.Email
-    $user = $existingUsers | Where-Object { $_.email -eq $email }
+    $user = $existingUsers | Where-Object { $_.email.Trim() -eq $email.Trim() }
     if($user -eq $Null) {
-        $name = $_.Name
-        $grp = $_.Group
+        $name = $_.Name.Trim()
+        $grp = $_.Group.Trim()
         $displayName = "${name}, ${grp}"
         Write-Host "User ${displayName} will be created"
 
