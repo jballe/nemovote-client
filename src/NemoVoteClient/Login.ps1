@@ -6,17 +6,18 @@ New-Variable -Name NemoVoteContext -Value ([PSCustomObject]@{
 $ErrorActionPreference = "STOP"
 
 function Open-NemoVote {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", '')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingUserNameAndPassWordParams", '')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', 'Password', Justification = 'Obsolete')]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true, Position=1 )]
-        $ServerUrl,
+        [String] $ServerUrl,
         [Parameter(Mandatory=$true, Position=2 )]
-        $Username,
+        [String] $Username,
         [Parameter(Mandatory=$true, Position=3 )]
         [String] $Password,
-        $Language = "da"
+        [String] $Language = "da"
     )
 
     Set-NemoVoteServerUrl $ServerUrl
@@ -27,7 +28,6 @@ function Open-NemoVote {
         password = $Password
     }
 
-    #$body = [System.Text.Encoding]::UTF8.GetBytes(($payload | ConvertTo-Json))
     $url = ("{0}/api/v1/auth/login" -f (Get-NemoVoteServerUrl))
     $response = Invoke-RestMethod -Uri $url `
         -ContentType "application/json; charset=utf-8" `
