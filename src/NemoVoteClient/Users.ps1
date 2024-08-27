@@ -66,7 +66,7 @@ function Add-NemoVoteUser {
 function Update-NemoVoteUser {
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory=$true, Position=1)]
+        [Parameter(Mandatory=$true, Position=1, ValueFromPipeline)]
         $User
     )
     
@@ -87,7 +87,7 @@ function Update-NemoVoteUser {
 function Remove-NemoVoteUser {
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory=$true, Position=1)]
+        [Parameter(Mandatory=$true, Position=1, ValueFromPipelineByPropertyName)]
         $Id
     )
 
