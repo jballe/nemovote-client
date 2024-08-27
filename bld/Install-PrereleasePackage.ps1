@@ -14,7 +14,7 @@ param(
 $ErrorActionPreference = "STOP"
 
 ## Add the package source
-Write-Host "Register NuGet Source" -ForegroundColor Green
+Write-Host "Register NuGet Source for feed $Feed" -ForegroundColor Green
 # Remove any existing 
 nuget sources Remove -Name $NugetSourceName | Out-String | Out-Null
 # Add source

@@ -13,6 +13,11 @@ on:
         required: false
         type: string
         default: ''
+      module_name:
+        required: false
+        type: string
+        default: NemoVoteClient
+
 
 jobs:
   publish:
@@ -47,7 +52,7 @@ jobs:
         $token = "${{ github.token }}" | ConvertTo-SecureString -AsPlainText -Force
         $creds = New-Object System.Management.Automation.PSCredential -ArgumentList @($user, $token)
         $feed = "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
-        $moduleName = "NemoVoteClient"
+        $moduleName = "${{ inputs.module_name }}"
         $repositoryName = "PowershellNugetServices"
 
         ## Force TLS1.2
@@ -82,4 +87,4 @@ jobs:
       - name: Install package
         shell: pwsh
         run: |
-          ./bld/Install-PrereleasePackage.ps1 -User "${{ github.actor }}" -PersonalAccessToken "${{ github.token }}" -Version ${{ inputs.version }}
+          ./bld/Install-PrereleasePackage.ps1 -User "${{ github.actor }}" -PersonalAccessToken "${{ github.token }}" -Version ${{ inputs.version }} -Feed "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" -PackageName "${{ inputs.module_name }}"
