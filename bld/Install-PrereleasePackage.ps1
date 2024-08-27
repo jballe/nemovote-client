@@ -7,7 +7,7 @@ param(
     $NugetSourceName = "GithubNemoVote",
     $LocalRegistryName = "PrivateNugetSource",
     $LocalRegistryPath = "./__modules",
-    $PackageName = "NemoVoteModule",
+    $PackageName = "NemoVoteClient",
     $Version = "0.1.0-betaworkflows0001",
     [Switch]$SkipCleanup
 )
