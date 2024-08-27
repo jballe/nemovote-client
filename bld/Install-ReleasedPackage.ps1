@@ -1,5 +1,5 @@
 param(
-    $PackageName = "MedlemsserviceModule",
+    $PackageName = "NemoVoteClient",
     $Version = "0.1.9-rc0001"
 )
 $ErrorActionPreference = "STOP"

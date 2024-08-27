@@ -24,4 +24,4 @@ jobs:
           Install-Module -Name Pester -Force -SkipPublisherCheck 
       - name: Run ScriptAnalyzer
         shell: pwsh
-        run: Invoke-ScriptAnalyzer -Path src/MedlemsserviceModule -IncludeDefaultRules -Recurse -ReportSummary -ExcludeRule PSAvoidTrailingWhitespace -EnableExit 
+        run: Invoke-ScriptAnalyzer -Path src/NemoVoteClient -IncludeDefaultRules -Recurse -ReportSummary -ExcludeRule PSAvoidTrailingWhitespace -EnableExit 
