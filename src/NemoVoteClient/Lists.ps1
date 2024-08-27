@@ -1,4 +1,4 @@
-function Get-NemoVotingLists {
+function Get-NemoVotingList {
     [CmdletBinding()]
     param(
     )
@@ -13,7 +13,7 @@ function Get-NemoVotingLists {
 }
 
 function Update-NemoVotingList {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         $List
     )
@@ -22,12 +22,16 @@ function Update-NemoVotingList {
     $token = Get-NemoVoteToken
     $body = [System.Text.Encoding]::UTF8.GetBytes( ($List | ConvertTo-Json) )
 
-
-    $response = Invoke-RestMethod "${server}/api/v1/voting-list/update" -Method PUT -Body $body -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
-    HandleError $response -Name "Update list" -RequestObject $List
+    $url = "${server}/api/v1/voting-list/update"
+    If ($PSCmdlet.ShouldProcess($List, "Updating list")) {
+        $response = Invoke-RestMethod $url -Method PUT -Body $body -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
+        HandleError $response -Name "Update list" -RequestObject $List
+    } else {
+        Write-Verbose ("Will call $url with content: `n{0}" -f ($List | ConvertTo-Json))
+    }
 }
 
-function Add-NemoVotingListMembers {
+function Add-NemoVotingListMember {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$True)]
@@ -38,7 +42,7 @@ function Add-NemoVotingListMembers {
 
     Write-Verbose ("For list {0} add {1} users: {2}" -f $ListId, $UserIds.Length, ($UserIds -join ","))
 
-    $lists = Get-NemoVotingLists
+    $lists = Get-NemoVotingList
     $list = $lists | Where-Object { $_.id -eq $ListId }
     $list.users += $UserIds
 
@@ -51,7 +55,8 @@ function Add-NemoVotingListMembers {
 }
 
 function Set-NemoVotingListMembers {
-    [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='It must update all members')]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$True)]
         [string]$ListId,
@@ -61,14 +66,18 @@ function Set-NemoVotingListMembers {
 
     Write-Verbose ("For list {0} add {1} users: {2}" -f $ListId, $UserIds.Length, ($UserIds -join ","))
 
-    $lists = Get-NemoVotingLists
+    $lists = Get-NemoVotingList
     $list = $lists | Where-Object { $_.id -eq $ListId }
     $list.users = $UserIds
 
-    Update-NemoVotingList ([PSCustomObject]@{
-        id = $list.id
-        name = $list.name
-        users = $list.users
-        weight = $list.weight
-    })
+    If ($PSCmdlet.ShouldProcess($ListId, "Updating list")) {
+        Update-NemoVotingList ([PSCustomObject]@{
+            id = $list.id
+            name = $list.name
+            users = $list.users
+            weight = $list.weight
+        })
+    } else {
+        Write-Verbose "Would call update list..."        
+    }
 }

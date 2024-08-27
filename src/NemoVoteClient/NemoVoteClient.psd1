@@ -28,10 +28,10 @@
     Copyright = '(c) Jesper Balle. All rights reserved. LGPL'
     
     # Description of the functionality provided by this module
-    Description = 'Interact with NemoVote SASS'
+    Description = 'Interact with NemoVote SaaS'
     
     # Minimum version of the PowerShell engine required by this module
-    PowerShellVersion = '3.0'
+    PowerShellVersion = '7.0'
     
     # Name of the PowerShell host required by this module
     # PowerShellHostName = ''
@@ -78,9 +78,9 @@
         "Remove-NemoVoteUser",
         "Send-NemoVoteUserCredentials",
 
-        "Get-NemoVotingLists",
+        "Get-NemoVotingList",
         "Update-NemoVotingList",
-        "Add-NemoVotingListMembers",
+        "Add-NemoVotingListMember",
         "Set-NemoVotingListMembers",
 
         "Get-RandomPassword",
@@ -114,7 +114,7 @@
         PSData = @{
     
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags = @("KFUM-Spejderne", "Nemovote", "voting")
+            Tags = @("KFUM-Spejderne", "Nemovote", "voting", "Integration")
     
             # A URL to the license for this module.
             # LicenseUri = ''
