@@ -13,7 +13,7 @@ function Get-NemoVotingList {
 }
 
 function Update-NemoVotingList {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param(
         $List
     )
@@ -23,7 +23,7 @@ function Update-NemoVotingList {
     $body = [System.Text.Encoding]::UTF8.GetBytes( ($List | ConvertTo-Json) )
 
     $url = "${server}/api/v1/voting-list/update"
-    If ($PSCmdlet.ShouldProcess($List, "Updating list")) {
+    If ($PSCmdlet.ShouldProcess("Updating list")) {
         $response = Invoke-RestMethod $url -Method PUT -Body $body -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
         HandleError $response -Name "Update list" -RequestObject $List
     } else {
@@ -56,7 +56,7 @@ function Add-NemoVotingListMember {
 
 function Set-NemoVotingListMembers {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='It must update all members')]
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param(
         [Parameter(Mandatory=$True)]
         [string]$ListId,
@@ -70,7 +70,7 @@ function Set-NemoVotingListMembers {
     $list = $lists | Where-Object { $_.id -eq $ListId }
     $list.users = $UserIds
 
-    If ($PSCmdlet.ShouldProcess($ListId, "Updating list")) {
+    If ($PSCmdlet.ShouldProcess("Update list")) {
         Update-NemoVotingList ([PSCustomObject]@{
             id = $list.id
             name = $list.name

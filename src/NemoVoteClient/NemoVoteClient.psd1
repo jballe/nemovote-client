@@ -66,7 +66,7 @@
         "Set-NemoVoteServerUrl",
         "Get-NemoVoteServerUrl",
         "Set-NemoVoteToken",
-        "Get-NemoVoteUsers",
+        "Get-NemoVoteUser",
         "Add-NemoVoteUser",
         "Update-NemoVoteUser",
         "Remove-NemoVoteUser",
