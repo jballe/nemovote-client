@@ -45,7 +45,7 @@ Open-NemoVote $NemoVoteUrl $NemoVoteUsername $NemoVotePassword
 
 # Create missing users and get userId of all users
 Write-Host "Ensure users are created" -ForegroundColor Green
-$existingUsers = Get-NemoVoteUsers | Where-Object { $_.accessLevel -eq 1 }
+$existingUsers = Get-NemoVoteUser | Where-Object { $_.accessLevel -eq 1 }
 $mapped = $voters | ForEach-Object {
     $email = $_.Email
     $user = $existingUsers | Where-Object { $_.email.Trim() -eq $email.Trim() }
@@ -83,7 +83,7 @@ $additional2Vote = @() + ($mapped | Where-Object { $_.Votes -ge 3 } | Select-Obj
 $additional3Vote = @() + ($mapped | Where-Object { $_.Votes -ge 4 } | Select-Object -ExpandProperty UserId)
 
 # Add users to voting lists
-$lists = Get-NemoVotingLists
+$lists = Get-NemoVotingList
 $additional1List = $lists | Where-Object { $_.name -eq "1. ekstra stemme" }
 $additional2List = $lists | Where-Object { $_.name -eq "2. ekstra stemme" }
 $additional3List = $lists | Where-Object { $_.name -eq "3. ekstra stemme" }

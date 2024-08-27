@@ -1,19 +1,20 @@
-function Get-NemoVoteUsers {
+function Get-NemoVoteUser {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification='Transparent type')]
     [CmdletBinding()]
     param(
-        $SearchQuery
+        $SearchQuery,
+        $PageSize = 50
     )
 
     $server = Get-NemoVoteServerUrl
     $token = Get-NemoVoteToken
 
-    $pageSize = 50
     $result = @()
     $page = 0
     $totalUsers = 0
     do {
         $page++
-        $url = "${server}/api/v1/user/getall?page=${page}&pageSize=${pageSize}&searchQuery=${SearchQuery}"
+        $url = "${server}/api/v1/user/getall?page=${page}&pageSize=${PageSize}&searchQuery=${SearchQuery}"
         $response = Invoke-RestMethod $url -Authentication Bearer -Token $token
         HandleError $response
 
@@ -63,36 +64,58 @@ function Add-NemoVoteUser {
 }
 
 function Update-NemoVoteUser {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory=$true, Position=1)]
+        [Parameter(Mandatory=$true, Position=1, ValueFromPipeline)]
         $User
     )
-    
-    $body = [System.Text.Encoding]::UTF8.GetBytes( ($User | ConvertTo-Json) )
-    $server = Get-NemoVoteServerUrl
-    $token = Get-NemoVoteToken
 
-    $response = Invoke-RestMethod "${server}/api/v1/user/update" -Method PUT -Body $body -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
-    HandleError $response -Name "Update user" -RequestObject $User
+    begin {
+        $server = Get-NemoVoteServerUrl
+        $token = Get-NemoVoteToken    
+    }
+
+    process {
+        $json = ($User | ConvertTo-Json)
+        $body = [System.Text.Encoding]::UTF8.GetBytes( $json )
+
+        $url = "${server}/api/v1/user/update"
+        If ($PSCmdlet.ShouldProcess($User, "Updating user")) {
+            $response = Invoke-RestMethod $url -Method PUT -Body $body -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
+            HandleError $response -Name "Update user" -RequestObject $User
+        } else {
+            Write-Verbose "Skip calling $url with content $json"
+        }
+    }
 }
 
 function Remove-NemoVoteUser {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory=$true, Position=1)]
+        [Parameter(Mandatory=$true, Position=1, ValueFromPipelineByPropertyName)]
         $Id
     )
 
-    $server = Get-NemoVoteServerUrl
-    $token = Get-NemoVoteToken
+    begin {
+        $server = Get-NemoVoteServerUrl
+        $token = Get-NemoVoteToken
+    }
 
-    Write-Verbose "Delete user ${Id}"
-    $response = Invoke-RestMethod "${server}/api/v1/user/delete/${Id}" -Method DELETE -Authentication Bearer -Token $token
-    HandleError $response
+    process {
+        Write-Verbose "Delete user ${Id}"
+        $url = "${server}/api/v1/user/delete/${Id}"
+        If ($PSCmdlet.ShouldProcess($Id, "Deleting user")) {
+            $response = Invoke-RestMethod  -Method DELETE -Authentication Bearer -Token $token
+            HandleError $response
+        } else {
+            Write-Verbose "Skip calling delete on $url"
+        }
+    }
+
 }
 
 function Send-NemoVoteUserCredentials {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Correct naming')]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true, Position=1)]

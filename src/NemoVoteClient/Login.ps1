@@ -6,6 +6,7 @@ New-Variable -Name NemoVoteContext -Value ([PSCustomObject]@{
 $ErrorActionPreference = "STOP"
 
 function Open-NemoVote {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification='Necessary')]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true, Position=1 )]
@@ -42,6 +43,7 @@ function Get-NemoVoteServerUrl {
 }
 
 function Set-NemoVoteServerUrl {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification='No side effects')]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true, Position=1 )]
@@ -54,6 +56,7 @@ function Set-NemoVoteServerUrl {
 }
 
 function Set-NemoVoteToken {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification='No side effects')]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true, Position=1 )]
