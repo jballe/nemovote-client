@@ -69,18 +69,23 @@ function Update-NemoVoteUser {
         [Parameter(Mandatory=$true, Position=1, ValueFromPipeline)]
         $User
     )
-    
-    $json = ($User | ConvertTo-Json)
-    $body = [System.Text.Encoding]::UTF8.GetBytes( $json )
-    $server = Get-NemoVoteServerUrl
-    $token = Get-NemoVoteToken
 
-    $url = "${server}/api/v1/user/update"
-    If ($PSCmdlet.ShouldProcess($User, "Updating user")) {
-        $response = Invoke-RestMethod $url -Method PUT -Body $body -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
-        HandleError $response -Name "Update user" -RequestObject $User
-    } else {
-        Write-Verbose "Skip calling $url with content $json"
+    begin {
+        $server = Get-NemoVoteServerUrl
+        $token = Get-NemoVoteToken    
+    }
+
+    process {
+        $json = ($User | ConvertTo-Json)
+        $body = [System.Text.Encoding]::UTF8.GetBytes( $json )
+
+        $url = "${server}/api/v1/user/update"
+        If ($PSCmdlet.ShouldProcess($User, "Updating user")) {
+            $response = Invoke-RestMethod $url -Method PUT -Body $body -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
+            HandleError $response -Name "Update user" -RequestObject $User
+        } else {
+            Write-Verbose "Skip calling $url with content $json"
+        }
     }
 }
 
@@ -91,17 +96,22 @@ function Remove-NemoVoteUser {
         $Id
     )
 
-    $server = Get-NemoVoteServerUrl
-    $token = Get-NemoVoteToken
-
-    Write-Verbose "Delete user ${Id}"
-    $url = "${server}/api/v1/user/delete/${Id}"
-    If ($PSCmdlet.ShouldProcess($Id, "Deleting user")) {
-        $response = Invoke-RestMethod  -Method DELETE -Authentication Bearer -Token $token
-        HandleError $response
-    } else {
-        Write-Verbose "Skip calling delete on $url"
+    begin {
+        $server = Get-NemoVoteServerUrl
+        $token = Get-NemoVoteToken
     }
+
+    process {
+        Write-Verbose "Delete user ${Id}"
+        $url = "${server}/api/v1/user/delete/${Id}"
+        If ($PSCmdlet.ShouldProcess($Id, "Deleting user")) {
+            $response = Invoke-RestMethod  -Method DELETE -Authentication Bearer -Token $token
+            HandleError $response
+        } else {
+            Write-Verbose "Skip calling delete on $url"
+        }
+    }
+
 }
 
 function Send-NemoVoteUserCredentials {
