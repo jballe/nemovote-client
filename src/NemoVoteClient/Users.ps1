@@ -109,7 +109,7 @@ function Remove-NemoVoteUser {
         $url = "${server}/api/v1/user/delete/${id}"
         If ($PSCmdlet.ShouldProcess("Delete user")) {
             $response = Invoke-RestMethod -Uri $url -Method DELETE -Authentication Bearer -Token $token
-            HandleError $response
+            HandleError $response -Name "Remove-NemoVoteUser"
         } else {
             Write-Verbose "Skip calling delete on $url"
         }
