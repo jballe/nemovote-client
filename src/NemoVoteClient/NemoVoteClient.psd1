@@ -77,6 +77,10 @@
         "Add-NemoVotingListMember",
         "Set-NemoVotingListMembers",
 
+        "Get-NemoVotingPoll",
+        "Get-NemoVotingPollResult",
+        "New-NemoVotingPoll",
+
         "Get-RandomPassword",
         "Get-NemoVoteToken"
     )
