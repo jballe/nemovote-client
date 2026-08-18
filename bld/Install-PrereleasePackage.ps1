@@ -55,6 +55,8 @@ nuget install $PackageName `
     -OutputDirectory $LocalRegistryPath `
     -Source $NugetSourceName `
     -Verbosity detailed
+Write-Output "Content: $LocalRegistryPath"
+Get-ChildItem $LocalRegistryPath -Recurse
 Move-Item (Join-Path $LocalRegistryPath "${PackageName}.${Version}" "${PackageName}.${Version}.nupkg" -Resolve) $LocalRegistryPath -Force
 Remove-Item (Join-Path $LocalRegistryPath "${PackageName}.${Version}" -Resolve) -Recurse -Force
 
