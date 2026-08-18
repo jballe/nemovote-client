@@ -87,7 +87,7 @@ jobs:
       - uses: nuget/setup-nuget@v3
         with:
           nuget-api-key: ${{ github.token }}
-          nuget-version: '7.x'
+          nuget-version: '6.x'
       - name: Install package
         shell: pwsh
         run: |
