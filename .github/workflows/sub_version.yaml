@@ -22,7 +22,7 @@ jobs:
       version_prerelease: ${{ steps.version.outputs.prerelease }}
       is_prerelease: ${{ steps.version.outputs.is_prerelease }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-tags: true
         fetch-depth: 0
