@@ -1,13 +1,15 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', 'NemoVotePassword', Justification = 'Obsolete')]
 param(
-    $NemoVoteUrl = (get-content (Join-Path $PSSCriptRoot "../data.json" -Resolve) | convertFrom-json | Select-Object -ExpandProperty NemoVoteUrl),
-    $NemoVoteUsername = (get-content (Join-Path $PSSCriptRoot "../data.json" -Resolve) | convertFrom-json | Select-Object -ExpandProperty NemoVoteUsername),
-    [SecureString]$NemoVotePassword = (get-content (Join-Path $PSSCriptRoot "../data.json" -Resolve) | convertFrom-json | Select-Object -ExpandProperty NemoVotePassword | ConvertTo-SecureString -AsPlainText -Force)
+    $NemoVoteUrl = (get-content (Join-Path $PSScriptRoot "../data.json" -Resolve) | convertFrom-json | Select-Object -ExpandProperty NemoVoteUrl),
+    $NemoVoteUsername = (get-content (Join-Path $PSScriptRoot "../data.json" -Resolve) | convertFrom-json | Select-Object -ExpandProperty NemoVoteUsername),
+    $NemoVotePassword = (get-content (Join-Path $PSScriptRoot "../data.json" -Resolve) | convertFrom-json | Select-Object -ExpandProperty NemoVotePassword)
 )
 
 $ErrorActionPreference = "STOP"
 
 Import-Module (Join-Path $PSScriptRoot "../src/NemoVoteClient" -Resolve) -RequiredVersion 1.0.0 -Force
 
+Write-Host "Now authenticating..."
 Open-NemoVote $NemoVoteUrl $NemoVoteUsername $NemoVotePassword
 
 #Get-NemoVoteUser | Format-Table -Property username, accessLevel, displayName, id
@@ -15,14 +17,22 @@ Open-NemoVote $NemoVoteUrl $NemoVoteUsername $NemoVotePassword
 #$users | ForEach-Object { Remove-NemoVoteUser $_.id }
 
 $no = Get-Random -Minimum 2 -Maximum 100
-$date = Get-Date
+$date = (Get-Date).Ticks
 $username = "user${no}"
-$newUser = Add-NemoVoteUser -Username $username -Displayname "User ${no} ${date}, Random gruppe, æøåÆØÅ" -Email "user${no}@balle-net.dk" -Pwd "123456"#(Get-RandomPassword -Length 8)
-Update-NemoVoteUser -User $newUser
+Write-Host "Now creating user $username"
+$newUser = Add-NemoVoteUser -Username $username -Displayname "User ${no} ${date}, Random gruppe, æøåÆØÅ" -Email "nemovote-user-${no}@balle.dev"
+
+Write-Host "Listing users"
 $users = Get-NemoVoteUser -SearchQuery $username
 
+#Update-NemoVoteUser -User $newUser
+$users = Get-NemoVoteUser -SearchQuery $username
+
+Write-Host "Get users"
 #$users | ForEach-Object { Remove-NemoVoteUser $_.id }
 $users | Format-Table -Property username, id, displayname
+
+Write-Host "Now removing user"
 Remove-NemoVoteUser -Id $newUser.id
 
 #$users | ForEach-Object { Remove-NemoVoteUser $_.id }

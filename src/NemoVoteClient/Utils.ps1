@@ -7,7 +7,6 @@ function HandleError {
         $Name = "method",
         [Parameter(Mandatory=$false, Position=3)]
         $RequestObject = $Null
-
     )
 
     If($Null -ne $RequestObject) {
@@ -19,7 +18,7 @@ function HandleError {
         $response | ConvertTo-Json | Write-Warning
     }
 
-    If($Response.code -eq 106) {
+    If($Response.code -gt 100) {
         Write-Error "Error during NemoVote ${Name}"
     }
 }

@@ -16,25 +16,11 @@ function Open-NemoVote {
         [Parameter(Mandatory=$true, Position=2 )]
         [String] $Username,
         [Parameter(Mandatory=$true, Position=3 )]
-        [String] $Password,
-        [String] $Language = "da"
+        [String] $Password
     )
 
     Set-NemoVoteServerUrl $ServerUrl
 
-    $payload = [PSCustomObject]@{
-        lang = $Language
-        username = $Username
-        password = $Password
-    }
-
-    $url = ("{0}/api/v1/auth/login" -f (Get-NemoVoteServerUrl))
-    $response = Invoke-RestMethod -Uri $url `
-        -ContentType "application/json; charset=utf-8" `
-        -Method POST `
-        -Body ($payload | ConvertTo-Json)
-    
-    HandleError -Response $response -Name "Login" -RequestObject $payload
-    $token = $response.data.token | ConvertTo-SecureString -AsPlainText -Force
-    Set-NemoVoteToken $token
+    $result = Open-NemoVoteWithToken -Username $Username -Password $Password -ServerUrl $ServerUrl
+    $result | Out-Null
 }

@@ -6,7 +6,7 @@ function Get-NemoVotingPoll {
     $server = Get-NemoVoteServerUrl
     $token = Get-NemoVoteToken
 
-    $response = Invoke-RestMethod "${server}/api/v1/vote/getall" -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
+    $response = Invoke-RestMethod "${server}/api/v1.1/vote/getall" -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
     HandleError $response -Name "Get-NemoVotingPoll"
 
     $response.data
@@ -26,7 +26,7 @@ function Get-NemoVotingPollResult {
     process {
         $token = Get-NemoVoteToken
 
-        $response = Invoke-RestMethod "${server}/api/v1/vote/result/${id}" -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
+        $response = Invoke-RestMethod "${server}/api/v1.1/vote/result/${id}" -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
         HandleError $response -Name "Get-NemoVotingPollResult"
 
         $response.data
@@ -83,7 +83,7 @@ function New-NemoVotingPoll {
 
     $body = [System.Text.Encoding]::UTF8.GetBytes( ($payload | ConvertTo-Json) )
 
-    $url = "${server}/api/v1/vote/create"
+    $url = "${server}/api/v1.1/vote/create"
     If ($PSCmdlet.ShouldProcess("Updating list")) {
         $response = Invoke-RestMethod $url -Method POST -Body $body -ContentType "application/json" -Authentication Bearer -Token $token
         HandleError $response -RequestObject $payload -Name "New-NemoVotingPoll"

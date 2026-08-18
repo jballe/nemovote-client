@@ -6,7 +6,7 @@ function Get-NemoVotingList {
     $server = Get-NemoVoteServerUrl
     $token = Get-NemoVoteToken
 
-    $response = Invoke-RestMethod "${server}/api/v1/voting-list/getall" -Authentication Bearer -Token $token
+    $response = Invoke-RestMethod "${server}/api/v1.1/voting-list/getall" -Authentication Bearer -Token $token
     HandleError $response
 
     $response.data
@@ -22,7 +22,7 @@ function Update-NemoVotingList {
     $token = Get-NemoVoteToken
     $body = [System.Text.Encoding]::UTF8.GetBytes( ($List | ConvertTo-Json) )
 
-    $url = "${server}/api/v1/voting-list/update"
+    $url = "${server}/api/v1.1/voting-list/update"
     If ($PSCmdlet.ShouldProcess("Updating list")) {
         $response = Invoke-RestMethod $url -Method PUT -Body $body -ContentType "application/json; charset=utf-8" -Authentication Bearer -Token $token
         HandleError $response -Name "Update list" -RequestObject $List
