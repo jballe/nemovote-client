@@ -84,8 +84,9 @@ jobs:
         with:
           fetch-tags: false
           fetch-depth: 1
-      - name: Install NuGet
-        run: sudo apt-get update && sudo apt-get install -y nuget
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 'latest'
       - name: Install package
         shell: pwsh
         run: |
