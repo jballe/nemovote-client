@@ -86,8 +86,6 @@ jobs:
           fetch-depth: 1
       - name: Setup NuGet
         uses: nuget/setup-nuget@v3
-        with:
-          nuget-version: '10.x'
       - name: Install package
         shell: pwsh
         run: |
